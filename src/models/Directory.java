@@ -1,7 +1,6 @@
 package models;
 
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
@@ -14,7 +13,7 @@ public class Directory {
     }
 
     public void addFile(String name, MetadataFile metadata){
-        files.put(name,metadata);
+        files.put(name, metadata);
     }
 
     public MetadataFile getMetadata(String name){
@@ -29,13 +28,36 @@ public class Directory {
         return files.keySet();
     }
 
-    public void list(){
-        for(MetadataFile metadata : files.values()){
-            System.out.println(metadata.toString());
-        }
-    }
-
     public boolean exists(String name){
         return files.containsKey(name);
+    }
+
+    public boolean isEmpty(){
+        return files.isEmpty();
+    }
+
+    public int count(){
+        return files.size();
+    }
+
+    /**
+     * Lista todos los archivos con formato.
+     */
+    public void list(){
+        if (isEmpty()) {
+            System.out.println("\n📂 El directorio está vacío.");
+            return;
+        }
+
+        System.out.println("\n╔════════════════════════════════════════════════════════════════════════════════════════════╗");
+        System.out.println("║                              DIRECTORIO DE ARCHIVOS                                        ║");
+        System.out.println("╠════════════════════════════════════════════════════════════════════════════════════════════╣");
+
+        for(MetadataFile metadata : files.values()){
+            System.out.println("║ " + metadata.toFormattedString() + " ║");
+        }
+
+        System.out.println("╚════════════════════════════════════════════════════════════════════════════════════════════╝");
+        System.out.println("Total de archivos: " + count());
     }
 }

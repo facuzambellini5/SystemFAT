@@ -7,28 +7,21 @@ import static models.Constants.*;
 public class FAT {
 
     private int[] fat;
-    private Disk disk;
-    private Directory directory;
-
 
     public FAT() {
         this.fat = new int[TOTAL_BLOCKS];
         Arrays.fill(fat, AVAILABLE_BLOCK);
-
-        this.disk = new Disk();
-        this.directory = new Directory();
-
     }
 
     public boolean isAvailable(int block){
         return fat[block] == AVAILABLE_BLOCK;
     }
 
-    public void linkBlocks (int actualBlock, int nextBlock){
+    public void linkBlocks(int actualBlock, int nextBlock){
         fat[actualBlock] = nextBlock;
     }
 
-    public void endOfFile(int blockNumber){
+    public void markAsEndOfFile(int blockNumber){
         fat[blockNumber] = END_OF_FILE;
     }
 
@@ -40,61 +33,14 @@ public class FAT {
         return fat[blockNumber];
     }
 
-
-
-    // Método principal
-    public boolean saveFile(String name, String content) {
-
-        if (directory.exists(name)) {
-            return addContentToFile(name, content);
-        }
-
-        return createFile(name, content);
-    }
-
-    // Métodos que acabamos de implementar
-    public boolean createFile(String name, String content) {
-
-        //calcular cantidad de bloques requeridos
-        int requiredBlocks = calculateRequiredBlocks(content);
-
-        //buscar bloques disponibles en la fat
-        List<Integer> availableBlocks = searchAvailableBlocks(requiredBlocks);
-
-        //validar si hay suficientes bloques disponibles
-        if (availableBlocks.size() < requiredBlocks){
-            System.out.println(MSG_DISK_OUT_OF_SPACE);
-            return false;
-        }
-
-        //escribir en disco
-        writeToDisk(content, availableBlocks);
-
-        //actualizar FAT.FAT
-        updateFAT(availableBlocks);
-
-        //Agregar entrada al directorio
-        int firstBlock = availableBlocks.getFirst();
-
-        MetadataFile metadata = new MetadataFile(name, content.length(), firstBlock);
-        directory.put(name, metadata);
-
-
-        System.out.println(directory);
-        return true;
-
-    }
-
-    public int calculateRequiredBlocks(String content) {
-        return (int) Math.ceil((double) content.length() / BLOCK_SIZE);
-    }
-
-    private List<Integer> searchAvailableBlocks(int requiredBlocks) {
-
+    /**
+     * Busca bloques disponibles en la FAT.
+     */
+    public List<Integer> searchAvailableBlocks(int requiredBlocks) {
         List<Integer> availableBlocks = new ArrayList<>();
 
-        for (int i = 0; i < FAT.length; i++){
-            if (FAT[i] == AVAILABLE_BLOCK){
+        for (int i = 0; i < fat.length; i++){
+            if (fat[i] == AVAILABLE_BLOCK){
                 availableBlocks.add(i);
                 if (availableBlocks.size() == requiredBlocks) break;
             }
@@ -102,53 +48,57 @@ public class FAT {
         return availableBlocks;
     }
 
+    /**
+     * Cuenta bloques disponibles totales.
+     */
     public int countAvailableBlocks(){
-        int availableBlocks = 0;
+        int count = 0;
         for (int block : fat){
-            if (block == AVAILABLE_BLOCK) availableBlocks ++;
+            if (block == AVAILABLE_BLOCK) count++;
         }
-        return availableBlocks;
+        return count;
     }
 
-    public void writeToDisk(String content, List<Integer> blocks) {
+    /**
+     * Obtiene la cadena completa de bloques de un archivo.
+     */
+    public List<Integer> getBlockChain(int firstBlock) {
+        List<Integer> chain = new ArrayList<>();
+        int currentBlock = firstBlock;
 
-        int contentPointer = 0;  // Posición actual en el contenido
-
-        for (int blockNumber : blocks) {
-            // Calcular el rango a copiar
-            int inicio = contentPointer;
-            int fin = Math.min(contentPointer + BLOCK_SIZE, content.length());
-
-            // Extraer fragmento y escribir en el disco
-            String fragment = content.substring(inicio, fin);
-            disk[blockNumber] = fragment;
-
-            contentPointer += BLOCK_SIZE;
+        while (currentBlock != END_OF_FILE) {
+            chain.add(currentBlock);
+            currentBlock = fat[currentBlock];
         }
 
+        return chain;
     }
 
-    private void updateFAT(List<Integer> blocks) {
-
+    /**
+     * Actualiza la FAT creando una lista enlazada de bloques.
+     */
+    public void updateFAT(List<Integer> blocks) {
         // Enlazar todos los bloques excepto el último
         for (int i = 0; i < blocks.size() - 1; i++) {
             int actualBlock = blocks.get(i);
             int nextBlock = blocks.get(i + 1);
 
-            FAT[actualBlock] = nextBlock;
-            System.out.println("  FAT[" + actualBlock + "] = " + nextBlock);
+            fat[actualBlock] = nextBlock;
         }
 
-        // El último bloque apunta a -1 (fin de archivo)
-        int ultimoBloque = blocks.getLast();
-        FAT[ultimoBloque] = END_OF_FILE;
-        System.out.println("  FAT[" + ultimoBloque + "] = "+ END_OF_FILE + "(FIN)");
-
+        // El último bloque marca fin de archivo
+        int lastBlock = blocks.getLast();
+        fat[lastBlock] = END_OF_FILE;
     }
 
-    // Pendiente de implementar
-    private boolean addContentToFile(String nombre, String contenido) {
-        // TODO: próximo paso
-        return false;
+    public void printStatus() {
+        System.out.println("ESTADO FAT");
+        for (int i = 0; i < fat.length; i++) {
+            if (fat[i] != AVAILABLE_BLOCK) {
+                String value = (fat[i] == END_OF_FILE) ? "EOF" : String.valueOf(fat[i]);
+                System.out.printf("  Bloque %3d → %s%n", i, value);
+            }
+        }
+        System.out.println("  Bloques libres: " + countAvailableBlocks() + "/" + TOTAL_BLOCKS);
     }
 }

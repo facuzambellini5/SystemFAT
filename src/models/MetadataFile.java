@@ -1,6 +1,8 @@
 package models;
 
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
+import java.time.format.FormatStyle;
 
 public class MetadataFile {
 
@@ -9,6 +11,8 @@ public class MetadataFile {
     private LocalDateTime createdDate;
     private LocalDateTime lastUpdate;
     private int firstBlock;
+
+    DateTimeFormatter formatter = DateTimeFormatter.ofLocalizedDateTime(FormatStyle.SHORT);
 
     public MetadataFile(String name, int size, int firstBlock) {
         this.name = name;
@@ -56,6 +60,18 @@ public class MetadataFile {
 
     public void setFirstBlock(int firstBlock) {
         this.firstBlock = firstBlock;
+    }
+
+    /**
+     * Formato para listar en el directorio.
+     */
+    public String toFormattedString() {
+        return String.format("%-15s | %6d bytes | Creado: %s | Modificado: %s | Bloque: %3d",
+                name,
+                size,
+                createdDate.format(formatter),
+                lastUpdate.format(formatter),
+                firstBlock);
     }
 
     @Override

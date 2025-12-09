@@ -16,54 +16,79 @@ public class Disk {
        Arrays.fill(disk, "");
    }
 
-   public void write(int blockNumber, String content){
-       disk[blockNumber] = content;
-   }
+    public void write(int blockNumber, String content){
+        disk[blockNumber] = content;
+    }
 
-   public String readBlock(int blockNumber){
-       return disk[blockNumber];
-   }
+    public String readBlock(int blockNumber){
+        return disk[blockNumber];
+    }
 
-   public void delete(int blockNumber){
-       disk[blockNumber]  = "";
-   }
+    public void delete(int blockNumber){
+        disk[blockNumber] = "";
+    }
 
-   public void writeContent(String content, List<Integer> availableBlocks){
-       int contentPointer = 0;  // Posición actual en el contenido
+    /**
+     * Escribe contenido fragmentado en múltiples bloques.
+     */
+    public void writeFragmented(String content, List<Integer> availableBlocks){
+        int contentPointer = 0;
 
-       for (int block : availableBlocks) {
-           // Calcular el rango a copiar
-           int inicio = contentPointer;
-           int fin = Math.min(contentPointer + BLOCK_SIZE, content.length());
+        for (int block : availableBlocks) {
+            int start = contentPointer;
+            int end = Math.min(contentPointer + BLOCK_SIZE, content.length());
 
-           // Extraer fragmento y escribir en el disco
-           String fragment = content.substring(inicio, fin);
-           disk[block] = fragment;
+            String fragment = content.substring(start, end);
+            disk[block] = fragment;
 
-           contentPointer += BLOCK_SIZE;
-       }
-   }
+            contentPointer += BLOCK_SIZE;
+        }
+    }
 
-   public String readFullContent(List<Integer> blockNumbers){
+    /**
+     * Lee contenido completo de múltiples bloques.
+     */
+    public String readFullContent(List<Integer> blockNumbers){
+        StringBuilder fullContent = new StringBuilder();
 
-       StringBuilder fullContent = new StringBuilder();
+        for(int block : blockNumbers){
+            fullContent.append(readBlock(block));
+        }
 
-       for(int block : blockNumbers){
-           fullContent.append(readBlock(block));
-       }
+        return fullContent.toString();
+    }
 
-       return fullContent.toString();
-   }
-
-    public int calculateRequiredBlocks(String content) {
+    /**
+     * Calcula cuántos bloques necesita un contenido.
+     */
+    public static int calculateRequiredBlocks(String content) {
         return (int) Math.ceil((double) content.length() / BLOCK_SIZE);
     }
 
-
-    public void imprimir() {
-        System.out.println("ESTADO DEL DISCO");
-        System.out.println(Arrays.toString(disk));
+    /**
+     * Obtiene espacio disponible en un bloque.
+     */
+    public int getAvailableSpace(int blockNumber) {
+        return BLOCK_SIZE - disk[blockNumber].length();
     }
 
+    /**
+     * Verifica si un bloque está vacío.
+     */
+    public boolean isEmpty(int blockNumber) {
+        return disk[blockNumber].isEmpty();
+    }
 
+    /**
+     * Imprime el estado del disco (para debugging).
+     */
+    public void printStatus() {
+        System.out.println("\n═══════════ ESTADO DISCO ═══════════");
+        for (int i = 0; i < disk.length; i++) {
+            if (!isEmpty(i)) {
+                System.out.printf("  Bloque %3d: \"%s\"%n", i, disk[i]);
+            }
+        }
+        System.out.println("═══════════════════════════════════\n");
+    }
 }

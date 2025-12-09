@@ -1,20 +1,11 @@
-import models.Disk;
-import models.FAT;
 
-import java.util.List;
-
+import ui.Console;
 
 public class Main {
     public static void main(String[] args) {
 
-        FAT fat = new FAT();
+        Console console = new Console();
 
-        String content = "Bueno esto es una prueba para ver cómo se comporta el disco y bueno reza malena reza";
-
-        Disk disk = new Disk();
-
-        disk.imprimir();
-
-
+        console.start();
     }
 }
