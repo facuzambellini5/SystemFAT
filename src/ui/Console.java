@@ -30,55 +30,54 @@ public class Console {
         }
 
         scanner.close();
-        System.out.println("\n👋 Sistema apagado. ¡Hasta luego!");
+        System.out.println("Saliendo...");
     }
 
     private void processCommand(String input) {
         String[] parts = input.split("\\s+", 2);
         String command = parts[0].toLowerCase();
 
-        if (command.equals("save") || command.equals("guardar")) {
+        if (command.equals("save")) {
             commandSave(parts);
         }
-        else if (command.equals("read") || command.equals("leer")) {
+        else if (command.equals("read")) {
             commandRead(parts);
         }
-        else if (command.equals("list") || command.equals("listar")) {
+        else if (command.equals("list")) {
             commandList();
         }
-        else if (command.equals("delete") || command.equals("borrar")) {
+        else if (command.equals("delete")) {
             commandDelete(parts);
         }
-        else if (command.equals("blocks") || command.equals("bloques")) {
+        else if (command.equals("blocks")) {
             commandBlocks(parts);
         }
-        else if (command.equals("status") || command.equals("estado")) {
+        else if (command.equals("status")) {
             commandStatus();
         }
-        else if (command.equals("help") || command.equals("ayuda")) {
+        else if (command.equals("help")) {
             showHelp();
         }
-        else if (command.equals("clear") || command.equals("limpiar")) {
+        else if (command.equals("clear")) {
             clearConsole();
         }
-        else if (command.equals("exit") || command.equals("salir")) {
+        else if (command.equals("exit")) {
             running = false;
         }
         else {
-            System.out.println("❌ Comando no reconocido. Escribe 'help' para ver la ayuda.");
+            System.out.println("Comando no reconocido. Escribe 'help' para ver la ayuda.");
         }
     }
 
     private void commandSave(String[] parts) {
         if (parts.length < 2) {
-            System.out.println("❌ Uso: save <nombre> <contenido>");
-            System.out.println("   Ejemplo: save carta.txt Hola mundo");
+            System.out.println("Uso: save <nombre> <contenido>");
             return;
         }
 
         String[] data = parts[1].split("\\s+", 2);
         if (data.length < 2) {
-            System.out.println("❌ Debes proporcionar nombre Y contenido.");
+            System.out.println("Debes proporcionar nombre Y contenido.");
             return;
         }
 
@@ -86,8 +85,9 @@ public class Console {
     }
 
     private void commandRead(String[] parts) {
+
         if (parts.length < 2) {
-            System.out.println("❌ Uso: read <nombre>");
+            System.out.println("Uso: read <nombre>");
             return;
         }
 
@@ -99,8 +99,9 @@ public class Console {
     }
 
     private void commandDelete(String[] parts) {
+
         if (parts.length < 2) {
-            System.out.println("❌ Uso: delete <nombre>");
+            System.out.println("Uso: delete <nombre>");
             return;
         }
 
@@ -109,7 +110,7 @@ public class Console {
 
     private void commandBlocks(String[] parts) {
         if (parts.length < 2) {
-            System.out.println("❌ Uso: blocks <nombre>");
+            System.out.println("Uso: blocks <nombre>");
             return;
         }
 
@@ -121,27 +122,20 @@ public class Console {
     }
 
     private void showWelcome() {
-        System.out.println("╔════════════════════════════════════════════════╗");
-        System.out.println("║                                                ║");
-        System.out.println("║    SIMULADOR DE SISTEMA DE ARCHIVOS FAT       ║");
-        System.out.println("║                                                ║");
-        System.out.println("╚════════════════════════════════════════════════╝");
+        System.out.println("-----SIMULADOR DE SISTEMA DE ARCHIVOS FAT-----");
     }
 
     private void showHelp() {
-        System.out.println("\n╔═══════════════════════════════════════════════════╗");
-        System.out.println("║              COMANDOS DISPONIBLES                 ║");
-        System.out.println("╠═══════════════════════════════════════════════════╣");
-        System.out.println("║ save <nombre> <contenido>  - Guardar archivo     ║");
-        System.out.println("║ read <nombre>              - Leer archivo        ║");
-        System.out.println("║ list                       - Listar archivos     ║");
-        System.out.println("║ delete <nombre>            - Eliminar archivo    ║");
-        System.out.println("║ blocks <nombre>            - Ver bloques         ║");
-        System.out.println("║ status                     - Estado del sistema  ║");
-        System.out.println("║ clear                      - Limpiar consola     ║");
-        System.out.println("║ help                       - Mostrar ayuda       ║");
-        System.out.println("║ exit                       - Salir               ║");
-        System.out.println("╚═══════════════════════════════════════════════════╝");
+        System.out.println("\n        -----COMANDOS DISPONIBLES-----");
+        System.out.println(" save <nombre> <contenido>  - Guardar archivo     ");
+        System.out.println(" read <nombre>              - Leer archivo        ");
+        System.out.println(" list                       - Listar archivos     ");
+        System.out.println(" delete <nombre>            - Eliminar archivo    ");
+        System.out.println(" blocks <nombre>            - Ver bloques         ");
+        System.out.println(" status                     - Estado del sistema  ");
+        System.out.println(" clear                      - Limpiar consola     ");
+        System.out.println(" help                       - Mostrar ayuda       ");
+        System.out.println(" exit                       - Salir               ");
     }
 
     private void clearConsole() {

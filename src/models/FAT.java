@@ -13,10 +13,6 @@ public class FAT {
         Arrays.fill(fat, AVAILABLE_BLOCK);
     }
 
-    public boolean isAvailable(int block){
-        return fat[block] == AVAILABLE_BLOCK;
-    }
-
     public void linkBlocks(int actualBlock, int nextBlock){
         fat[actualBlock] = nextBlock;
     }

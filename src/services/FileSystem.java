@@ -30,23 +30,22 @@ public class FileSystem {
     /**
      * Guarda un archivo. Si existe, anexa contenido.
      */
-    public boolean saveFile(String name, String content) {
-        System.out.println("\n━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━");
-        System.out.println("📝 Guardando archivo: " + name);
-        System.out.println("━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━");
+    public void saveFile(String name, String content) {
 
         if (directory.exists(name)) {
-            System.out.println("ℹ️  El archivo ya existe. Anexando contenido...");
-            return appendContent(name, content);
+            System.out.println("\nAgregando contenido a archivo '" + name + "'");
+            appendContent(name, content);
+            return;
         }
 
-        return createFile(name, content);
+        System.out.println("\nCreando archivo.");
+        createFile(name, content);
     }
 
     /**
      * Crea un archivo nuevo.
      */
-    private boolean createFile(String name, String content) {
+    private void createFile(String name, String content) {
         // 1. Calcular bloques necesarios
         int requiredBlocks = Disk.calculateRequiredBlocks(content);
         System.out.println("   Bloques necesarios: " + requiredBlocks);
@@ -58,7 +57,7 @@ public class FileSystem {
         if (availableBlocks.size() < requiredBlocks) {
             System.out.println("❌ " + MSG_DISK_OUT_OF_SPACE);
             System.out.println("   Se necesitan " + requiredBlocks + " bloques, solo hay " + availableBlocks.size());
-            return false;
+            return;
         }
 
         System.out.println("   Bloques asignados: " + availableBlocks);
@@ -78,7 +77,6 @@ public class FileSystem {
         System.out.println("   Tamaño: " + content.length() + " caracteres");
         System.out.println("   Bloque inicial: " + firstBlock);
 
-        return true;
     }
 
     /**
