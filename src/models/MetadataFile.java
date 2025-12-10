@@ -12,7 +12,7 @@ public class MetadataFile {
     private LocalDateTime lastUpdate;
     private int firstBlock;
 
-    DateTimeFormatter formatter = DateTimeFormatter.ofLocalizedDateTime(FormatStyle.SHORT);
+    private DateTimeFormatter formatter = DateTimeFormatter.ofLocalizedDateTime(FormatStyle.SHORT);
 
     public MetadataFile(String name, int size, int firstBlock) {
         this.name = name;
@@ -66,7 +66,7 @@ public class MetadataFile {
      * Formato para listar en el directorio.
      */
     public String toFormattedString() {
-        return String.format("%-15s | %6d caracteres | Creado: %s | Modificado: %s | Bloque: %3d",
+        return String.format("%-15s | %6d caracteres | Creado: %s | Modificado: %s | Bloque inicial: %3d",
                 name,
                 size,
                 createdDate.format(formatter),

@@ -85,10 +85,20 @@ public class Disk {
      */
     public void printStatus() {
         System.out.println("\n-----ESTADO DISCO-----");
-        for (int i = 0; i < disk.length; i++) {
-            if (!isEmpty(i)) {
-                System.out.printf("Bloque " + i + ": " + disk[i]+"\n");
+
+        int total = disk.length;
+        int columns = (int) Math.ceil(Math.sqrt(total));
+
+        for (int i = 0; i < total; i++) {
+            String status = disk[i].isEmpty() ? "0" : "1";
+
+            System.out.printf("[%03d] %s  ", i, status);
+
+            if ((i + 1) % columns == 0) {
+                System.out.println();
             }
         }
+
+        System.out.println("\n(1 = Ocupado, 0 = Libre)");
     }
 }

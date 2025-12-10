@@ -24,8 +24,15 @@ public class Directory {
         files.remove(name);
     }
 
-    public Set<String> getFileNames(){
-        return files.keySet();
+    public boolean renameFile(String oldName, String newName) {
+        if (!files.containsKey(oldName)) return false;
+        if (files.containsKey(newName)) return false;
+
+        MetadataFile metadata = files.remove(oldName);
+        metadata.setName(newName);
+        files.put(newName, metadata);
+
+        return true;
     }
 
     public boolean exists(String name){

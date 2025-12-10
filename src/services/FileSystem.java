@@ -5,6 +5,7 @@ import models.Disk;
 import models.Fat;
 import models.MetadataFile;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 import static constants.Constants.*;
@@ -35,7 +36,6 @@ public class FileSystem {
 
         if (directory.exists(name)) {
             appendContent(name, content);
-            System.out.println("\nContenido agregado al archivo '" + name + "'.");
             return;
         }
 
@@ -48,7 +48,7 @@ public class FileSystem {
     private void createFile(String name, String content) {
         // 1. Calcular bloques necesarios
         int requiredBlocks = Disk.calculateRequiredBlocks(content);
-        System.out.println("   Bloques necesarios: " + requiredBlocks);
+        System.out.println("Bloques necesarios: " + requiredBlocks);
 
         // 2. Buscar bloques disponibles
         List<Integer> availableBlocks = fat.searchAvailableBlocks(requiredBlocks);
@@ -125,10 +125,31 @@ public class FileSystem {
 
         // 7. Actualizar metadata
         metadata.setSize(metadata.getSize() + content.length());
+        metadata.setLastUpdate(LocalDateTime.now());
 
         System.out.println("Contenido agregado al archivo '" + name + "'.");
 
         return true;
+    }
+
+    public void renameFile(String oldName, String newName) {
+        if (!directory.exists(oldName)) {
+            System.out.println("El archivo '" + oldName + "' no existe.");
+            return;
+        }
+
+        if (directory.exists(newName)) {
+            System.out.println("Ya existe un archivo con el nombre '" + newName + "'.");
+            return;
+        }
+
+        boolean success = directory.renameFile(oldName, newName);
+
+        if (success) {
+            System.out.println("Archivo renombrado correctamente: " + oldName + " → " + newName);
+        } else {
+            System.out.println("No se pudo renombrar el archivo.");
+        }
     }
 
     /**
@@ -153,7 +174,7 @@ public class FileSystem {
         System.out.println(content);
 
         System.out.println("\nTamaño: " + metadata.getSize() + " caracteres");
-        System.out.println("Bloques utilizados: " + blocks);
+        System.out.println("Bloques asignados: " + blocks);
     }
 
     /**
@@ -213,7 +234,15 @@ public class FileSystem {
 
         List<Integer> blocks = fat.getBlockChain(firstBlock);
 
-        System.out.println("\n-----Distribución en disco-----");
+        System.out.println("\n-----CADENA FAT-----");
+
+        for (int block : blocks) {
+            int next = fat.getNextBlock(block);
+            String nextStr = (next == END_OF_FILE) ? "EOF" : String.valueOf(next);
+            System.out.printf("Bloque %3d → %s\n", block, nextStr);
+        }
+
+        System.out.println("\n-----BLOQUES DEL DISCO-----");
 
         for (int i = 0; i < blocks.size(); i++) {
             int block = blocks.get(i);
@@ -222,7 +251,6 @@ public class FileSystem {
         }
 
         System.out.println("\nTotal de bloques: " + blocks.size());
-        System.out.println("Cadena: " + blocks);
     }
 
     /**

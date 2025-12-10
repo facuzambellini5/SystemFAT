@@ -88,13 +88,13 @@ public class Fat {
     }
 
     public void printStatus() {
-        System.out.println("-----ESTADO FAT-----");
+        System.out.println("\n-----ESTADO FAT-----");
         for (int i = 0; i < fat.length; i++) {
             if (fat[i] != AVAILABLE_BLOCK) {
                 String value = (fat[i] == END_OF_FILE) ? "EOF" : String.valueOf(fat[i]);
                 System.out.printf("Bloque " + i + " → " + value + "\n");
             }
         }
-        System.out.println("Bloques libres: " + countAvailableBlocks() + "/" + TOTAL_BLOCKS);
+        System.out.println("\nBloques libres: " + countAvailableBlocks() + "/" + TOTAL_BLOCKS);
     }
 }

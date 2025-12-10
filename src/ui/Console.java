@@ -43,6 +43,9 @@ public class Console {
         else if (command.equals("read")) {
             commandRead(parts);
         }
+        else if (command.equals("rename")) {
+            commandRename(parts);
+        }
         else if (command.equals("list")) {
             commandList();
         }
@@ -65,7 +68,7 @@ public class Console {
             running = false;
         }
         else {
-            System.out.println("Comando no reconocido. Escribe 'help' para ver la ayuda.");
+            System.out.println("Comando no reconocido. Escribe 'help' para ver lista de comandos.");
         }
     }
 
@@ -75,9 +78,10 @@ public class Console {
             return;
         }
 
-        String[] data = parts[1].split("\\s+", 2);
+        String[] data = parts[1].split(" ", 2);
+
         if (data.length < 2) {
-            System.out.println("Debes proporcionar nombre Y contenido.");
+            System.out.println("Se requiere de nombre y contenido.");
             return;
         }
 
@@ -92,6 +96,21 @@ public class Console {
         }
 
         fileSystem.readFile(parts[1]);
+    }
+
+    private void commandRename(String[] parts) {
+        if (parts.length < 2) {
+            System.out.println("Uso: rename <nombreActual> <nombreNuevo>");
+            return;
+        }
+
+        String[] names = parts[1].split("\\s+");
+        if (names.length < 2) {
+            System.out.println("Nombre actual y nombre nuevo requeridos.");
+            return;
+        }
+
+        fileSystem.renameFile(names[0], names[1]);
     }
 
     private void commandList() {
@@ -127,15 +146,16 @@ public class Console {
 
     private void showHelp() {
         System.out.println("\n        -----COMANDOS DISPONIBLES-----");
-        System.out.println(" save <nombre> <contenido>  - Guardar archivo     ");
-        System.out.println(" read <nombre>              - Leer archivo        ");
-        System.out.println(" list                       - Listar archivos     ");
-        System.out.println(" delete <nombre>            - Eliminar archivo    ");
-        System.out.println(" blocks <nombre>            - Ver bloques         ");
-        System.out.println(" status                     - Estado del sistema  ");
-        System.out.println(" clear                      - Limpiar consola     ");
-        System.out.println(" help                       - Mostrar ayuda       ");
-        System.out.println(" exit                       - Salir               ");
+        System.out.println(" save <name> <content>      - Guardar archivo");
+        System.out.println(" read <name>                - Leer archivo");
+        System.out.println(" rename <name> <newName>    - Renombrar archivo");
+        System.out.println(" list                       - Listar archivos");
+        System.out.println(" delete <name>              - Eliminar archivo");
+        System.out.println(" blocks <name>              - Ver bloques");
+        System.out.println(" status                     - Estado del sistema");
+        System.out.println(" clear                      - Limpiar consola");
+        System.out.println(" help                       - Mostrar ayuda");
+        System.out.println(" exit                       - Salir");
     }
 
     private void clearConsole() {
