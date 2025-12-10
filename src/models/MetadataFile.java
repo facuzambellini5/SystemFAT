@@ -66,7 +66,7 @@ public class MetadataFile {
      * Formato para listar en el directorio.
      */
     public String toFormattedString() {
-        return String.format("%-15s | %6d bytes | Creado: %s | Modificado: %s | Bloque: %3d",
+        return String.format("%-15s | %6d caracteres | Creado: %s | Modificado: %s | Bloque: %3d",
                 name,
                 size,
                 createdDate.format(formatter),

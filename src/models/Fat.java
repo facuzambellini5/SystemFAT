@@ -2,13 +2,13 @@ package models;
 
 import java.util.*;
 
-import static models.Constants.*;
+import static constants.Constants.*;
 
-public class FAT {
+public class Fat {
 
     private int[] fat;
 
-    public FAT() {
+    public Fat() {
         this.fat = new int[TOTAL_BLOCKS];
         Arrays.fill(fat, AVAILABLE_BLOCK);
     }
@@ -88,13 +88,13 @@ public class FAT {
     }
 
     public void printStatus() {
-        System.out.println("ESTADO FAT");
+        System.out.println("-----ESTADO FAT-----");
         for (int i = 0; i < fat.length; i++) {
             if (fat[i] != AVAILABLE_BLOCK) {
                 String value = (fat[i] == END_OF_FILE) ? "EOF" : String.valueOf(fat[i]);
-                System.out.printf("  Bloque %3d → %s%n", i, value);
+                System.out.printf("Bloque " + i + " → " + value + "\n");
             }
         }
-        System.out.println("  Bloques libres: " + countAvailableBlocks() + "/" + TOTAL_BLOCKS);
+        System.out.println("Bloques libres: " + countAvailableBlocks() + "/" + TOTAL_BLOCKS);
     }
 }

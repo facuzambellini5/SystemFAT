@@ -2,29 +2,30 @@ package services;
 
 import models.Directory;
 import models.Disk;
-import models.FAT;
+import models.Fat;
 import models.MetadataFile;
 
 import java.util.List;
 
-import static models.Constants.*;
+import static constants.Constants.*;
 
 
 public class FileSystem {
 
-    private FAT fat;
+    private Fat fat;
     private Disk disk;
     private Directory directory;
 
     public FileSystem() {
-        this.fat = new FAT();
+        this.fat = new Fat();
         this.disk = new Disk();
         this.directory = new Directory();
 
-        System.out.println("✅ Sistema FAT inicializado correctamente.");
-        System.out.println("   • Bloques totales: " + TOTAL_BLOCKS);
-        System.out.println("   • Tamaño por bloque: " + BLOCK_SIZE + " caracteres");
-        System.out.println("   • Capacidad total: " + (TOTAL_BLOCKS * BLOCK_SIZE) + " caracteres\n");
+        System.out.println("-----SISTEMA DE ARCHIVOS FAT-----");
+
+        System.out.println("Bloques totales: " + TOTAL_BLOCKS);
+        System.out.println("Tamaño por bloque: " + BLOCK_SIZE + " caracteres");
+        System.out.println("Capacidad total: " + (TOTAL_BLOCKS * BLOCK_SIZE) + " caracteres\n");
     }
 
     /**
@@ -33,12 +34,11 @@ public class FileSystem {
     public void saveFile(String name, String content) {
 
         if (directory.exists(name)) {
-            System.out.println("\nAgregando contenido a archivo '" + name + "'");
             appendContent(name, content);
+            System.out.println("\nContenido agregado al archivo '" + name + "'.");
             return;
         }
 
-        System.out.println("\nCreando archivo.");
         createFile(name, content);
     }
 
@@ -55,12 +55,12 @@ public class FileSystem {
 
         // 3. Validar espacio suficiente
         if (availableBlocks.size() < requiredBlocks) {
-            System.out.println("❌ " + MSG_DISK_OUT_OF_SPACE);
-            System.out.println("   Se necesitan " + requiredBlocks + " bloques, solo hay " + availableBlocks.size());
+            System.out.println(MSG_DISK_OUT_OF_SPACE);
+            System.out.println("Se necesitan " + requiredBlocks + " bloques, solo hay " + availableBlocks.size());
             return;
         }
 
-        System.out.println("   Bloques asignados: " + availableBlocks);
+        System.out.println("Bloques asignados: " + availableBlocks);
 
         // 4. Escribir en disco
         disk.writeFragmented(content, availableBlocks);
@@ -69,14 +69,11 @@ public class FileSystem {
         fat.updateFAT(availableBlocks);
 
         // 6. Agregar al directorio
-        int firstBlock = availableBlocks.get(0);
+        int firstBlock = availableBlocks.getFirst();
         MetadataFile metadata = new MetadataFile(name, content.length(), firstBlock);
         directory.addFile(name, metadata);
 
-        System.out.println("✅ " + MSG_FILE_SAVED);
-        System.out.println("   Tamaño: " + content.length() + " caracteres");
-        System.out.println("   Bloque inicial: " + firstBlock);
-
+        System.out.println(MSG_FILE_SAVED);
     }
 
     /**
@@ -89,7 +86,7 @@ public class FileSystem {
 
         // 2. Obtener cadena de bloques actual
         List<Integer> currentBlocks = fat.getBlockChain(firstBlock);
-        int lastBlock = currentBlocks.get(currentBlocks.size() - 1);
+        int lastBlock = currentBlocks.getLast();
 
         // 3. Verificar espacio disponible en el último bloque
         int availableSpace = disk.getAvailableSpace(lastBlock);
@@ -110,17 +107,17 @@ public class FileSystem {
             List<Integer> newBlocks = fat.searchAvailableBlocks(additionalBlocks);
 
             if (newBlocks.size() < additionalBlocks) {
-                System.out.println("❌ " + MSG_DISK_OUT_OF_SPACE);
+                System.out.println(MSG_DISK_OUT_OF_SPACE);
                 return false;
             }
 
-            System.out.println("   Bloques adicionales: " + newBlocks);
+            System.out.println("Bloques adicionales: " + newBlocks);
 
             // Escribir contenido restante
             disk.writeFragmented(remainingContent, newBlocks);
 
             // Enlazar último bloque anterior con los nuevos
-            fat.linkBlocks(lastBlock, newBlocks.get(0));
+            fat.linkBlocks(lastBlock, newBlocks.getFirst());
 
             // Actualizar FAT con los nuevos bloques
             fat.updateFAT(newBlocks);
@@ -129,8 +126,7 @@ public class FileSystem {
         // 7. Actualizar metadata
         metadata.setSize(metadata.getSize() + content.length());
 
-        System.out.println("✅ Contenido anexado exitosamente.");
-        System.out.println("   Nuevo tamaño: " + metadata.getSize() + " caracteres");
+        System.out.println("Contenido agregado al archivo '" + name + "'.");
 
         return true;
     }
@@ -139,12 +135,9 @@ public class FileSystem {
      * Lee un archivo completo.
      */
     public void readFile(String name) {
-        System.out.println("\n━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━");
-        System.out.println("📖 Leyendo archivo: " + name);
-        System.out.println("━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━");
 
         if (!directory.exists(name)) {
-            System.out.println("❌ " + MSG_FILE_NOT_FOUND);
+            System.out.println(MSG_FILE_NOT_FOUND);
             return;
         }
 
@@ -157,9 +150,8 @@ public class FileSystem {
         // Leer contenido completo
         String content = disk.readFullContent(blocks);
 
-        System.out.println("\n┌─── Contenido del archivo ───┐");
         System.out.println(content);
-        System.out.println("└─────────────────────────────┘");
+
         System.out.println("\nTamaño: " + metadata.getSize() + " caracteres");
         System.out.println("Bloques utilizados: " + blocks);
     }
@@ -175,12 +167,9 @@ public class FileSystem {
      * Elimina un archivo.
      */
     public void deleteFile(String name) {
-        System.out.println("\n━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━");
-        System.out.println("🗑️  Eliminando archivo: " + name);
-        System.out.println("━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━");
 
         if (!directory.exists(name)) {
-            System.out.println("❌ " + MSG_FILE_NOT_FOUND);
+            System.out.println(MSG_FILE_NOT_FOUND);
             return;
         }
 
@@ -190,7 +179,7 @@ public class FileSystem {
         // Obtener cadena de bloques
         List<Integer> blocks = fat.getBlockChain(firstBlock);
 
-        System.out.println("   Liberando bloques: " + blocks);
+        System.out.println("Liberando bloques: " + blocks);
 
         // Liberar bloques en disco
         for (int block : blocks) {
@@ -205,19 +194,17 @@ public class FileSystem {
         // Eliminar del directorio
         directory.deleteFile(name);
 
-        System.out.println("✅ Archivo eliminado exitosamente.");
+        System.out.println("Archivo eliminado correctamente.");
     }
 
     /**
      * Muestra los bloques que ocupa un archivo.
      */
     public void showBlocks(String name) {
-        System.out.println("\n━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━");
-        System.out.println("🔍 Bloques del archivo: " + name);
-        System.out.println("━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━");
+        System.out.println("Bloques del archivo: " + name);
 
         if (!directory.exists(name)) {
-            System.out.println("❌ " + MSG_FILE_NOT_FOUND);
+            System.out.println(MSG_FILE_NOT_FOUND);
             return;
         }
 
@@ -226,19 +213,20 @@ public class FileSystem {
 
         List<Integer> blocks = fat.getBlockChain(firstBlock);
 
-        System.out.println("\n┌─── Distribución en disco ───┐");
+        System.out.println("\n-----Distribución en disco-----");
+
         for (int i = 0; i < blocks.size(); i++) {
             int block = blocks.get(i);
             String content = disk.readBlock(block);
-            System.out.printf("  Bloque %3d: \"%s\"%n", block, content);
+            System.out.printf("Bloque %3d: \"%s\"%n", block, content);
         }
-        System.out.println("└─────────────────────────────┘");
+
         System.out.println("\nTotal de bloques: " + blocks.size());
         System.out.println("Cadena: " + blocks);
     }
 
     /**
-     * Muestra el estado completo del sistema (debugging).
+     * Muestra el estado completo del sistema.
      */
     public void showSystemStatus() {
         fat.printStatus();

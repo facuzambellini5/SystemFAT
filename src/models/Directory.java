@@ -45,19 +45,16 @@ public class Directory {
      */
     public void list(){
         if (isEmpty()) {
-            System.out.println("\n📂 El directorio está vacío.");
+            System.out.println("\nEl directorio está vacío.");
             return;
         }
 
-        System.out.println("\n╔════════════════════════════════════════════════════════════════════════════════════════════╗");
-        System.out.println("║                              DIRECTORIO DE ARCHIVOS                                        ║");
-        System.out.println("╠════════════════════════════════════════════════════════════════════════════════════════════╣");
+        System.out.println("\n-----DIRECTORIO DE ARCHIVOS-----");
 
         for(MetadataFile metadata : files.values()){
-            System.out.println("║ " + metadata.toFormattedString() + " ║");
+            System.out.println(metadata.toFormattedString());
         }
 
-        System.out.println("╚════════════════════════════════════════════════════════════════════════════════════════════╝");
-        System.out.println("Total de archivos: " + count());
+        System.out.println("\nTotal de archivos: " + count());
     }
 }

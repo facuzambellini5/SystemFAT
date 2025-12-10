@@ -3,8 +3,8 @@ package models;
 import java.util.Arrays;
 import java.util.List;
 
-import static models.Constants.BLOCK_SIZE;
-import static models.Constants.TOTAL_BLOCKS;
+import static constants.Constants.BLOCK_SIZE;
+import static constants.Constants.TOTAL_BLOCKS;
 
 public class Disk {
 
@@ -32,6 +32,7 @@ public class Disk {
      * Escribe contenido fragmentado en múltiples bloques.
      */
     public void writeFragmented(String content, List<Integer> availableBlocks){
+
         int contentPointer = 0;
 
         for (int block : availableBlocks) {
@@ -83,12 +84,11 @@ public class Disk {
      * Imprime el estado del disco (para debugging).
      */
     public void printStatus() {
-        System.out.println("\n═══════════ ESTADO DISCO ═══════════");
+        System.out.println("\n-----ESTADO DISCO-----");
         for (int i = 0; i < disk.length; i++) {
             if (!isEmpty(i)) {
-                System.out.printf("  Bloque %3d: \"%s\"%n", i, disk[i]);
+                System.out.printf("Bloque " + i + ": " + disk[i]+"\n");
             }
         }
-        System.out.println("═══════════════════════════════════\n");
     }
 }

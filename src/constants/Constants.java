@@ -1,4 +1,4 @@
-package models;
+package constants;
 
 public class Constants {
 
@@ -10,5 +10,5 @@ public class Constants {
 
     public static final String MSG_DISK_OUT_OF_SPACE = "ERROR: No hay suficiente espacio en el disco.";
     public static final String MSG_FILE_NOT_FOUND = "ERROR: Archivo no encontrado.";
-    public static final String MSG_FILE_SAVED = "Archivo guardado exitosamente.";
+    public static final String MSG_FILE_SAVED = "Archivo guardado correctamente.";
 }
