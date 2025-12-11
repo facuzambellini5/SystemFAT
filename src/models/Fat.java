@@ -10,7 +10,22 @@ public class Fat {
 
     public Fat() {
         this.fat = new int[TOTAL_BLOCKS];
-        Arrays.fill(fat, AVAILABLE_BLOCK);
+        initializeFAT();
+    }
+
+    /**
+     * Inicializa la FAT marcando bloques reservados y disponibles.
+     */
+    private void initializeFAT() {
+        // Marcar bloques reservados para el sistema (0-9)
+        for (int i = RESERVED_BLOCKS_START; i <= RESERVED_BLOCKS_END; i++) {
+            fat[i] = RESERVED_BLOCK;
+        }
+
+        // Marcar resto como disponible
+        for (int i = FIRST_AVAILABLE_BLOCK; i < TOTAL_BLOCKS; i++) {
+            fat[i] = AVAILABLE_BLOCK;
+        }
     }
 
     public void linkBlocks(int actualBlock, int nextBlock){
@@ -22,7 +37,10 @@ public class Fat {
     }
 
     public void setAvailable(int blockNumber){
-        fat[blockNumber] = AVAILABLE_BLOCK;
+        // No permitir marcar bloques reservados como disponibles
+        if (blockNumber >= FIRST_AVAILABLE_BLOCK) {
+            fat[blockNumber] = AVAILABLE_BLOCK;
+        }
     }
 
     public int getNextBlock(int blockNumber){
@@ -30,12 +48,13 @@ public class Fat {
     }
 
     /**
-     * Busca bloques disponibles en la FAT.
+     * Busca bloques disponibles en la FAT (excluyendo bloques reservados).
      */
     public List<Integer> searchAvailableBlocks(int requiredBlocks) {
         List<Integer> availableBlocks = new ArrayList<>();
 
-        for (int i = 0; i < fat.length; i++){
+        // Comenzar desde el primer bloque disponible (después de los reservados)
+        for (int i = FIRST_AVAILABLE_BLOCK; i < fat.length; i++){
             if (fat[i] == AVAILABLE_BLOCK){
                 availableBlocks.add(i);
                 if (availableBlocks.size() == requiredBlocks) break;
@@ -45,12 +64,23 @@ public class Fat {
     }
 
     /**
-     * Cuenta bloques disponibles totales.
+     * Cuenta bloques disponibles totales (sin contar reservados).
      */
     public int countAvailableBlocks(){
         int count = 0;
-        for (int block : fat){
-            if (block == AVAILABLE_BLOCK) count++;
+        for (int i = FIRST_AVAILABLE_BLOCK; i < fat.length; i++){
+            if (fat[i] == AVAILABLE_BLOCK) count++;
+        }
+        return count;
+    }
+
+    /**
+     * Cuenta bloques ocupados por archivos de usuario.
+     */
+    public int countUsedBlocks() {
+        int count = 0;
+        for (int i = FIRST_AVAILABLE_BLOCK; i < fat.length; i++) {
+            if (fat[i] != AVAILABLE_BLOCK) count++;
         }
         return count;
     }
@@ -87,14 +117,27 @@ public class Fat {
         fat[lastBlock] = END_OF_FILE;
     }
 
+    /**
+     * Reinicia la FAT al estado inicial.
+     */
+    public void format() {
+        initializeFAT();
+    }
+
     public void printStatus() {
         System.out.println("\n-----ESTADO FAT-----");
-        for (int i = 0; i < fat.length; i++) {
+
+        // Mostrar bloques reservados
+        System.out.println("Bloques reservados del sistema (0-9): RESERVED");
+
+        // Mostrar bloques de archivos
+        for (int i = FIRST_AVAILABLE_BLOCK; i < fat.length; i++) {
             if (fat[i] != AVAILABLE_BLOCK) {
                 String value = (fat[i] == END_OF_FILE) ? "EOF" : String.valueOf(fat[i]);
-                System.out.printf("Bloque " + i + " → " + value + "\n");
+                System.out.printf("Bloque %d → %s\n", i, value);
             }
         }
-        System.out.println("\nBloques libres: " + countAvailableBlocks() + "/" + TOTAL_BLOCKS);
+
+        System.out.println("\nBloques libres: " + countAvailableBlocks() + "/" + (TOTAL_BLOCKS - RESERVED_BLOCKS_COUNT));
     }
 }

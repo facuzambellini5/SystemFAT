@@ -2,7 +2,6 @@ package models;
 
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Set;
 
 public class Directory {
 
@@ -63,5 +62,12 @@ public class Directory {
         }
 
         System.out.println("\nTotal de archivos: " + count());
+    }
+
+    /**
+     * Limpia el directorio completamente.
+     */
+    public void clear() {
+        files.clear();
     }
 }

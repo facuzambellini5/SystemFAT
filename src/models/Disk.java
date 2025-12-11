@@ -3,18 +3,17 @@ package models;
 import java.util.Arrays;
 import java.util.List;
 
-import static constants.Constants.BLOCK_SIZE;
-import static constants.Constants.TOTAL_BLOCKS;
+import static constants.Constants.*;
 
 public class Disk {
 
-   private String[] disk;
+    private String[] disk;
 
-   //Inicializar disco vacío.
-   public Disk(){
-       this.disk = new String[TOTAL_BLOCKS];
-       Arrays.fill(disk, "");
-   }
+    //Inicializar disco vacío.
+    public Disk(){
+        this.disk = new String[TOTAL_BLOCKS];
+        Arrays.fill(disk, "");
+    }
 
     public void write(int blockNumber, String content){
         disk[blockNumber] = content;
@@ -26,6 +25,13 @@ public class Disk {
 
     public void delete(int blockNumber){
         disk[blockNumber] = "";
+    }
+
+    /**
+     * Formatea el disco completo (limpia todos los bloques).
+     */
+    public void format() {
+        Arrays.fill(disk, "");
     }
 
     /**
@@ -90,7 +96,14 @@ public class Disk {
         int columns = (int) Math.ceil(Math.sqrt(total));
 
         for (int i = 0; i < total; i++) {
-            String status = disk[i].isEmpty() ? "0" : "1";
+            String status;
+
+            // Identificar tipo de bloque
+            if (i >= RESERVED_BLOCKS_START && i <= RESERVED_BLOCKS_END) {
+                status = disk[i].isEmpty() ? "S" : "S"; // S = Sistema
+            } else {
+                status = disk[i].isEmpty() ? "0" : "1";
+            }
 
             System.out.printf("[%03d] %s  ", i, status);
 
@@ -99,6 +112,6 @@ public class Disk {
             }
         }
 
-        System.out.println("\n(1 = Ocupado, 0 = Libre)");
+        System.out.println("\n(1 = Ocupado, 0 = Libre, S = Reservado por el sistema.)");
     }
 }

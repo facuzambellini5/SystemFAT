@@ -23,10 +23,12 @@ public class FileSystem {
         this.directory = new Directory();
 
         System.out.println("-----SISTEMA DE ARCHIVOS FAT-----");
-
         System.out.println("Bloques totales: " + TOTAL_BLOCKS);
-        System.out.println("Tamaño por bloque: " + BLOCK_SIZE + " caracteres");
-        System.out.println("Capacidad total: " + (TOTAL_BLOCKS * BLOCK_SIZE) + " caracteres\n");
+        System.out.println("Bloques reservados (sistema): " + RESERVED_BLOCKS_COUNT + " (bloques 0-9)");
+        System.out.println("Bloques disponibles (archivos): " + (TOTAL_BLOCKS - RESERVED_BLOCKS_COUNT));
+        System.out.println("Tamaño de bloque: " + BLOCK_SIZE + " caracteres");
+        System.out.println("Capacidad total: " + ((TOTAL_BLOCKS - RESERVED_BLOCKS_COUNT) * BLOCK_SIZE) + " caracteres\n");
+
     }
 
     /**
@@ -261,5 +263,81 @@ public class FileSystem {
         disk.printStatus();
         directory.list();
     }
-}
 
+    /**
+     * Muestra estadísticas del sistema.
+     */
+    public void showStatistics() {
+        int totalBlocks = TOTAL_BLOCKS - RESERVED_BLOCKS_COUNT;
+        int usedBlocks = fat.countUsedBlocks();
+        int freeBlocks = fat.countAvailableBlocks();
+
+        int totalCapacity = totalBlocks * BLOCK_SIZE;
+        int usedCapacity = usedBlocks * BLOCK_SIZE;
+        int freeCapacity = freeBlocks * BLOCK_SIZE;
+
+        double usagePercentage = (double) usedBlocks / totalBlocks * 100;
+
+        int fileCount = directory.count();
+        double avgFragmentation = fileCount > 0 ? (double) usedBlocks / fileCount : 0;
+
+
+        System.out.println("\n-----ESTADÍSTICAS DEL SISTEMA FAT-----");
+
+
+        System.out.println("\nCAPACIDAD:");
+        System.out.printf("Capacidad total:    %d caracteres\n", totalCapacity);
+        System.out.printf("Espacio usado:      %d caracteres (%.1f%%)\n", usedCapacity, usagePercentage);
+        System.out.printf("Espacio libre:      %d caracteres (%.1f%%)\n", freeCapacity, 100 - usagePercentage);
+
+        System.out.println("\nBLOQUES:");
+        System.out.printf("Total de bloques:   %d bloques\n", totalBlocks);
+        System.out.printf("Bloques ocupados:   %d bloques\n", usedBlocks);
+        System.out.printf("Bloques libres:     %d bloques\n", freeBlocks);
+        System.out.printf("Bloques reservados: %d bloques (sistema)\n", RESERVED_BLOCKS_COUNT);
+
+        System.out.println("\nARCHIVOS:");
+        System.out.printf("Total de archivos:  %d\n", fileCount);
+        System.out.printf("Fragmentación avg:  %.2f bloques/archivo\n", avgFragmentation);
+
+        System.out.println("\nCONFIGURACIÓN:");
+        System.out.printf("Tamaño de bloque:   %d caracteres\n", BLOCK_SIZE);
+        System.out.printf("Bloques totales:    %d (10 reservados + 90 disponibles)\n", TOTAL_BLOCKS);
+
+        // Barra de progreso visual
+        System.out.println("\nOCUPACIÓN DEL DISCO:");
+        printProgressBar(usagePercentage);
+    }
+
+    /**
+     * Imprime una barra de progreso visual.
+     */
+    private void printProgressBar(double percentage) {
+        int barLength = 40;
+        int filled = (int) (barLength * percentage / 100);
+
+        System.out.print("   [");
+        for (int i = 0; i < barLength; i++) {
+            if (i < filled) {
+                System.out.print("█");
+            } else {
+                System.out.print("░");
+            }
+        }
+        System.out.printf("] %.1f%%\n", percentage);
+    }
+
+    /**
+     * Formatea el sistema completo.
+     */
+    public void format() {
+
+        // Limpiar todas las estructuras
+        fat.format();
+        disk.format();
+        directory.clear();
+
+        System.out.println(MSG_SYSTEM_FORMATTED);
+    }
+
+}

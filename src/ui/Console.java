@@ -17,7 +17,6 @@ public class Console {
     }
 
     public void start() {
-        showWelcome();
         showHelp();
 
         while (running) {
@@ -57,6 +56,12 @@ public class Console {
         }
         else if (command.equals("status")) {
             commandStatus();
+        }
+        else if (command.equals("stats")) {
+            commandStats();
+        }
+        else if (command.equals("format")) {
+            commandFormat();
         }
         else if (command.equals("help")) {
             showHelp();
@@ -140,22 +145,39 @@ public class Console {
         fileSystem.showSystemStatus();
     }
 
-    private void showWelcome() {
-        System.out.println("-----SIMULADOR DE SISTEMA DE ARCHIVOS FAT-----");
+    private void commandStats() {
+        fileSystem.showStatistics();
+    }
+
+    private void commandFormat() {
+        System.out.println("\nEsta operación eliminará TODOS los archivos.");
+        System.out.print("¿Está seguro de que desea continuar? (S/N): ");
+
+        String confirmation = scanner.nextLine().trim().toUpperCase();
+
+        if (confirmation.equals("S") || confirmation.equals("SI")) {
+            fileSystem.format();
+        } else {
+            System.out.println("Operación cancelada.");
+        }
     }
 
     private void showHelp() {
-        System.out.println("\n        -----COMANDOS DISPONIBLES-----");
-        System.out.println(" save <name> <content>      - Guardar archivo");
-        System.out.println(" read <name>                - Leer archivo");
-        System.out.println(" rename <name> <newName>    - Renombrar archivo");
-        System.out.println(" list                       - Listar archivos");
-        System.out.println(" delete <name>              - Eliminar archivo");
-        System.out.println(" blocks <name>              - Ver bloques");
-        System.out.println(" status                     - Estado del sistema");
-        System.out.println(" clear                      - Limpiar consola");
-        System.out.println(" help                       - Mostrar ayuda");
-        System.out.println(" exit                       - Salir");
+
+        System.out.println("\n       -----COMANDOS DISPONIBLES-----              ");
+
+        System.out.println("save <name> <content>      - Guardar archivo");
+        System.out.println("read <name>                - Leer archivo");
+        System.out.println("rename <name> <newName>    - Renombrar archivo");
+        System.out.println("list                       - Listar archivos");
+        System.out.println("delete <name>              - Eliminar archivo");
+        System.out.println("blocks <name>              - Ver bloques de archivo");
+        System.out.println("stats                      - Ver estadísticas del sistema");
+        System.out.println("status                     - Estado detallado del sistema");
+        System.out.println("format                     - Formatear sistema");
+        System.out.println("clear                      - Limpiar consola");
+        System.out.println("help                       - Mostrar ayuda");
+        System.out.println("exit                       - Salir");
     }
 
     private void clearConsole() {
