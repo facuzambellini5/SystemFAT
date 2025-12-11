@@ -32,7 +32,7 @@ public class FileSystem {
     }
 
     /**
-     * Guarda un archivo. Si existe, anexa contenido.
+     * Guardar un archivo. Si existe, anexar contenido.
      */
     public void saveFile(String name, String content) {
 
@@ -45,17 +45,17 @@ public class FileSystem {
     }
 
     /**
-     * Crea un archivo nuevo.
+     * Crear un archivo nuevo.
      */
     private void createFile(String name, String content) {
-        // 1. Calcular bloques necesarios
+        //Calcular bloques necesarios
         int requiredBlocks = Disk.calculateRequiredBlocks(content);
         System.out.println("Bloques necesarios: " + requiredBlocks);
 
-        // 2. Buscar bloques disponibles
+        //Buscar bloques disponibles
         List<Integer> availableBlocks = fat.searchAvailableBlocks(requiredBlocks);
 
-        // 3. Validar espacio suficiente
+        //Validar espacio suficiente
         if (availableBlocks.size() < requiredBlocks) {
             System.out.println(MSG_DISK_OUT_OF_SPACE);
             System.out.println("Se necesitan " + requiredBlocks + " bloques, solo hay " + availableBlocks.size());
@@ -64,13 +64,13 @@ public class FileSystem {
 
         System.out.println("Bloques asignados: " + availableBlocks);
 
-        // 4. Escribir en disco
+        //Escribir en disco
         disk.writeFragmented(content, availableBlocks);
 
-        // 5. Actualizar FAT
+        //Actualizar FAT
         fat.updateFAT(availableBlocks);
 
-        // 6. Agregar al directorio
+        //Agregar al directorio
         int firstBlock = availableBlocks.getFirst();
         MetadataFile metadata = new MetadataFile(name, content.length(), firstBlock);
         directory.addFile(name, metadata);
@@ -79,31 +79,31 @@ public class FileSystem {
     }
 
     /**
-     * Anexa contenido a un archivo existente.
+     * Anexar contenido a un archivo existente.
      */
     private boolean appendContent(String name, String content) {
-        // 1. Obtener metadata del archivo
+        //Obtener metadata del archivo
         MetadataFile metadata = directory.getMetadata(name);
         int firstBlock = metadata.getFirstBlock();
 
-        // 2. Obtener cadena de bloques actual
+        //Obtener cadena de bloques actual
         List<Integer> currentBlocks = fat.getBlockChain(firstBlock);
         int lastBlock = currentBlocks.getLast();
 
-        // 3. Verificar espacio disponible en el último bloque
+        //Verificar espacio disponible en el último bloque
         int availableSpace = disk.getAvailableSpace(lastBlock);
         String existingContent = disk.readBlock(lastBlock);
 
-        // 4. Calcular cuánto podemos agregar al último bloque
+        //Calcular cuánto podemos agregar al último bloque
         int toAppendInLastBlock = Math.min(availableSpace, content.length());
         String remainingContent = content.substring(toAppendInLastBlock);
 
-        // 5. Completar el último bloque
+        //Completar el último bloque
         if (toAppendInLastBlock > 0) {
             disk.write(lastBlock, existingContent + content.substring(0, toAppendInLastBlock));
         }
 
-        // 6. Si queda contenido, necesitamos más bloques
+        //Si queda contenido, necesitamos más bloques
         if (!remainingContent.isEmpty()) {
             int additionalBlocks = Disk.calculateRequiredBlocks(remainingContent);
             List<Integer> newBlocks = fat.searchAvailableBlocks(additionalBlocks);
@@ -125,7 +125,7 @@ public class FileSystem {
             fat.updateFAT(newBlocks);
         }
 
-        // 7. Actualizar metadata
+        //Actualizar metadata
         metadata.setSize(metadata.getSize() + content.length());
         metadata.setLastUpdate(LocalDateTime.now());
 
@@ -155,7 +155,7 @@ public class FileSystem {
     }
 
     /**
-     * Lee un archivo completo.
+     * Leer un archivo completo.
      */
     public void readFile(String name) {
 
@@ -180,14 +180,14 @@ public class FileSystem {
     }
 
     /**
-     * Lista todos los archivos.
+     * Listar todos los archivos.
      */
     public void listFiles() {
         directory.list();
     }
 
     /**
-     * Elimina un archivo.
+     * Eliminar un archivo.
      */
     public void deleteFile(String name) {
 
@@ -221,7 +221,7 @@ public class FileSystem {
     }
 
     /**
-     * Muestra los bloques que ocupa un archivo.
+     * Mostrar los bloques que ocupa un archivo.
      */
     public void showBlocks(String name) {
         System.out.println("Bloques del archivo: " + name);
@@ -256,7 +256,7 @@ public class FileSystem {
     }
 
     /**
-     * Muestra el estado completo del sistema.
+     * Mostrar el estado completo del sistema.
      */
     public void showStatus() {
         fat.printStatus();
@@ -265,7 +265,7 @@ public class FileSystem {
     }
 
     /**
-     * Muestra estadísticas del sistema.
+     * Mostrar estadísticas del sistema.
      */
     public void showStats() {
         int totalBlocks = TOTAL_BLOCKS - RESERVED_BLOCKS_COUNT;
@@ -310,7 +310,7 @@ public class FileSystem {
     }
 
     /**
-     * Imprime una barra de progreso visual.
+     * Mostrar una barra de progreso visual.
      */
     private void printProgressBar(double percentage) {
         int barLength = 40;
@@ -328,7 +328,7 @@ public class FileSystem {
     }
 
     /**
-     * Formatea el sistema completo.
+     * Formatear el sistema completo.
      */
     public void format() {
 

@@ -14,7 +14,7 @@ public class Fat {
     }
 
     /**
-     * Inicializa la FAT marcando bloques reservados y disponibles.
+     * Inicializar FAT
      */
     private void initializeFAT() {
         // Marcar bloques reservados para el sistema (0-9)
@@ -48,7 +48,7 @@ public class Fat {
     }
 
     /**
-     * Busca bloques disponibles en la FAT (excluyendo bloques reservados).
+     * Buscar bloques disponibles en FAT
      */
     public List<Integer> searchAvailableBlocks(int requiredBlocks) {
         List<Integer> availableBlocks = new ArrayList<>();
@@ -64,7 +64,7 @@ public class Fat {
     }
 
     /**
-     * Cuenta bloques disponibles totales (sin contar reservados).
+     * Contar bloques disponibles totales
      */
     public int countAvailableBlocks(){
         int count = 0;
@@ -75,7 +75,7 @@ public class Fat {
     }
 
     /**
-     * Cuenta bloques ocupados por archivos de usuario.
+     * Contar bloques ocupados por archivos
      */
     public int countUsedBlocks() {
         int count = 0;
@@ -86,7 +86,7 @@ public class Fat {
     }
 
     /**
-     * Obtiene la cadena completa de bloques de un archivo.
+     * Obtener cadena completa de bloques de un archivo.
      */
     public List<Integer> getBlockChain(int firstBlock) {
         List<Integer> chain = new ArrayList<>();
@@ -101,7 +101,7 @@ public class Fat {
     }
 
     /**
-     * Actualiza la FAT creando una lista enlazada de bloques.
+     * Actualizar la FAT creando lista enlazada de bloques.
      */
     public void updateFAT(List<Integer> blocks) {
         // Enlazar todos los bloques excepto el último
@@ -118,7 +118,7 @@ public class Fat {
     }
 
     /**
-     * Reinicia la FAT al estado inicial.
+     * Reiniciar FAT
      */
     public void format() {
         initializeFAT();

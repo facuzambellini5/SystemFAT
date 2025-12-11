@@ -47,7 +47,7 @@ public class Directory {
     }
 
     /**
-     * Lista todos los archivos con formato.
+     * Listar todos los archivos con formato.
      */
     public void list(){
         if (isEmpty()) {
@@ -65,7 +65,7 @@ public class Directory {
     }
 
     /**
-     * Limpia el directorio completamente.
+     * Limpiar el directorio completamente.
      */
     public void clear() {
         files.clear();

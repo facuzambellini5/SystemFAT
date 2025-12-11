@@ -27,15 +27,12 @@ public class Disk {
         disk[blockNumber] = "";
     }
 
-    /**
-     * Formatea el disco completo (limpia todos los bloques).
-     */
     public void format() {
         Arrays.fill(disk, "");
     }
 
     /**
-     * Escribe contenido fragmentado en múltiples bloques.
+     * Escribir contenido fragmentado en múltiples bloques.
      */
     public void writeFragmented(String content, List<Integer> availableBlocks){
 
@@ -53,7 +50,7 @@ public class Disk {
     }
 
     /**
-     * Lee contenido completo de múltiples bloques.
+     * Leer contenido completo de múltiples bloques.
      */
     public String readFullContent(List<Integer> blockNumbers){
         StringBuilder fullContent = new StringBuilder();

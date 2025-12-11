@@ -62,9 +62,6 @@ public class MetadataFile {
         this.firstBlock = firstBlock;
     }
 
-    /**
-     * Formato para listar en el directorio.
-     */
     public String toFormattedString() {
         return String.format("%-15s | %6d caracteres | Creado: %s | Modificado: %s | Bloque inicial: %3d",
                 name,
