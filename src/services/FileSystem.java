@@ -258,7 +258,7 @@ public class FileSystem {
     /**
      * Muestra el estado completo del sistema.
      */
-    public void showSystemStatus() {
+    public void showStatus() {
         fat.printStatus();
         disk.printStatus();
         directory.list();
@@ -267,7 +267,7 @@ public class FileSystem {
     /**
      * Muestra estadísticas del sistema.
      */
-    public void showStatistics() {
+    public void showStats() {
         int totalBlocks = TOTAL_BLOCKS - RESERVED_BLOCKS_COUNT;
         int usedBlocks = fat.countUsedBlocks();
         int freeBlocks = fat.countAvailableBlocks();

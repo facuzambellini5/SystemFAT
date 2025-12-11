@@ -141,12 +141,12 @@ public class Console {
         fileSystem.showBlocks(parts[1]);
     }
 
-    private void commandStatus() {
-        fileSystem.showSystemStatus();
+    private void commandStats() {
+        fileSystem.showStats();
     }
 
-    private void commandStats() {
-        fileSystem.showStatistics();
+    private void commandStatus() {
+        fileSystem.showStatus();
     }
 
     private void commandFormat() {
